@@ -39,17 +39,13 @@ def launch_huishi():
 
 def start_huishi_default():
     try:
-        huishi_window = auto.WindowControl(searchDepth=1, Name='绘世 2.2.19', ClassName='Window')
-        huishi_window.SetFocus()
-        start_click = huishi_window.TextControl(foundIndex = 2)
-        start_click.Click()
-        huishi_window.ButtonControl(AutomationId = 'LaunchNowButton').Click()
+        start_huishi_ipv6('127.0.0.1')
     except Exception:
         return False
     else:
         return True
 
-def start_huishi_ipv6():
+def start_huishi_ipv6(adress:str):
     try:
         huishi_window = auto.WindowControl(searchDepth=1, Name='绘世 2.2.19', ClassName='Window')
         huishi_window.SetFocus()
@@ -64,7 +60,7 @@ def start_huishi_ipv6():
         ip = listen_group.EditControl(foundIndex=1)
         # 全选替换ip
         ip.SendKeys('{Ctrl}a')
-        ip.SendKeys('[%s]' % getIPv6Address(2))
+        ip.SendKeys(adress)
 
         start_btn = advanced_config.ButtonControl(foundIndex = 2)
         start_btn.Click()
@@ -86,4 +82,4 @@ def quit_webui(webui: str='SD'):
 
 if __name__ == '__main__':
     print('start')
-    print(start_huishi_ipv6())
+    print(start_huishi_ipv6('weihr'))

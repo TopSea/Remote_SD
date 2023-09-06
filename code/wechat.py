@@ -11,6 +11,7 @@ auto.uiautomation.SetGlobalSearchTimeout(5)
 wechatWindow = None
 runing = 0
 ipv6 = ''
+huishi_started = False
 
 
 def gain_focus():
@@ -47,6 +48,7 @@ def get_latest_msg():
 
 def deal_msg(msg: str):
     global runing
+    global huishi_started
     if msg.startswith('@'):
         print("收到指令：%s" % msg)
         if msg == '@启动6':
@@ -90,6 +92,9 @@ def deal_msg(msg: str):
         if msg == '@启动绘世6':
             gain_focus()
             send_feedback(info="将以 IPv6 模式启动 绘世 ......")
+            if not huishi_started:
+                launch_huishi()
+                huishi_started = True
             if runing == 0:
                 start_huishi_ipv6("[%s]"%ipv6)
             elif runing == 4:
@@ -109,6 +114,9 @@ def deal_msg(msg: str):
         elif msg == '@启动绘世':
             gain_focus()
             send_feedback(info="将以普通模式启动 绘世 ......")
+            if not huishi_started:
+                launch_huishi()
+                huishi_started = True
             if runing == 0:
                 start_huishi_default()
             elif runing == 4:
@@ -123,7 +131,7 @@ def deal_msg(msg: str):
             else:
                 pass
             runing = 14
-            gain_focus()
+            # gain_focus()
 
         elif msg == '@关闭':
             gain_focus()
@@ -143,6 +151,7 @@ def deal_msg(msg: str):
             if runing == 14 or runing == 16:
                 send_feedback(info="已停止 绘世 ......")
                 quit_huishi()
+                huishi_started = False
             sleep(2)
             gain_focus()
     else:
@@ -158,15 +167,15 @@ def send_feedback( info: str, compName: str='文件传输助手'):
 
 if __name__ == '__main__' :
     # 登录微信
-    if(wechat_login()):
-        print('成功登录微信。')
-    else :
-        print('未执行微信登录，尝试让微信获取焦点。')
+    # if(wechat_login()):
+    #     print('成功登录微信。')
+    # else :
+    #     print('未执行微信登录，尝试让微信获取焦点。')
 
     # 微信获取焦点
     if(gain_focus()):
         # 发送 ipv6 地址
-        send_ipv6()
+        # send_ipv6()
         # 循环处理信息
         while True:
             # 获取最后一条信息
