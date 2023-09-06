@@ -10,6 +10,7 @@ from webui_control import *
 auto.uiautomation.SetGlobalSearchTimeout(5)
 wechatWindow = None
 runing = 0
+ipv6 = ''
 
 
 def gain_focus():
@@ -23,16 +24,17 @@ def gain_focus():
         return True
 
 def send_ipv6():
+    global ipv6
+    ipv6 = getIPv6Address(2)
     chat_btn = wechatWindow.ButtonControl(Name='聊天')
     chat_btn.Click()
-
 
     chats = wechatWindow.ListControl(Name="会话")
     for chat in chats.GetChildren():
         if chat.Name == "文件传输助手":
             chat.Click()
             edit = wechatWindow.EditControl(Name=chat.Name)
-            edit.SendKeys(httpIPv6Address(getIPv6Address(2), "7860"))
+            edit.SendKeys(httpIPv6Address(ipv6, "7860"))
             sendButton = wechatWindow.ButtonControl(Name='发送(S)')
             sendButton.Click()
             break
@@ -55,6 +57,12 @@ def deal_msg(msg: str):
             elif runing == 4:
                 quit_webui('SD_IPv4')
                 start_webui('webui_ipv6.bat')
+            elif runing == 14:
+                quit_huishi_control()
+                start_webui('webui_ipv4.bat')
+            elif runing == 16:
+                quit_huishi_control()
+                start_webui('webui_ipv4.bat')
             else:
                 pass
             runing = 6
@@ -68,6 +76,12 @@ def deal_msg(msg: str):
             elif runing == 6:
                 quit_webui('SD_IPv6')
                 start_webui('webui_ipv4.bat')
+            elif runing == 14:
+                quit_huishi_control()
+                start_webui('webui_ipv4.bat')
+            elif runing == 16:
+                quit_huishi_control()
+                start_webui('webui_ipv4.bat')
             else:
                 pass
             runing = 4
@@ -77,16 +91,16 @@ def deal_msg(msg: str):
             gain_focus()
             send_feedback(info="将以 IPv6 模式启动 绘世 ......")
             if runing == 0:
-                start_huishi_ipv6()
+                start_huishi_ipv6("[%s]"%ipv6)
             elif runing == 4:
                 quit_webui('SD_IPv4')
-                start_huishi_ipv6()
+                start_huishi_ipv6("[%s]"%ipv6)
             elif runing == 6:
                 quit_webui('SD_IPv6')
-                start_huishi_ipv6()
+                start_huishi_ipv6("[%s]"%ipv6)
             elif runing == 14:
                 quit_huishi_control()
-                start_huishi_ipv6()
+                start_huishi_ipv6("[%s]"%ipv6)
             else:
                 pass
             runing = 16
@@ -98,11 +112,14 @@ def deal_msg(msg: str):
             if runing == 0:
                 start_huishi_default()
             elif runing == 4:
-                quit_webui('SD_IPv6')
+                quit_webui('SD_IPv4')
+                start_huishi_default()
             elif runing == 6:
                 quit_webui('SD_IPv6')
+                start_huishi_default()
             elif runing == 16:
                 quit_huishi_control()
+                start_huishi_default()
             else:
                 pass
             runing = 14
@@ -123,8 +140,9 @@ def deal_msg(msg: str):
 
         elif msg == '@关闭绘世':
             gain_focus()
-            send_feedback(info="已停止 绘世 ......")
-            quit_huishi()
+            if runing == 14 or runing == 16:
+                send_feedback(info="已停止 绘世 ......")
+                quit_huishi()
             sleep(2)
             gain_focus()
     else:
@@ -140,10 +158,10 @@ def send_feedback( info: str, compName: str='文件传输助手'):
 
 if __name__ == '__main__' :
     # 登录微信
-    # if(wechat_login()):
-    #     print('成功登录微信。')
-    # else :
-    #     print('未执行微信登录，尝试让微信获取焦点。')
+    if(wechat_login()):
+        print('成功登录微信。')
+    else :
+        print('未执行微信登录，尝试让微信获取焦点。')
 
     # 微信获取焦点
     if(gain_focus()):
